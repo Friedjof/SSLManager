@@ -1,0 +1,22 @@
+{
+  "ca": {
+    "country": "US",
+    "state": "California",
+    "city": "San Francisco",
+    "organization": "Your Organization",
+    "organizationalUnit": "IT Department",
+    "email": "admin@example.com",
+    "commonName": "Your Root CA"
+  },
+  "defaults": {
+    "keySize": 2048,
+    "validityDays": 365,
+    "country": "US",
+    "state": "California",
+    "city": "San Francisco",
+    "organization": "Your Organization",
+    "organizationalUnit": "IT Department",
+    "email": "ssl@example.com",
+    "localTLDs": ["lan", "local", "fkn", "internal"]
+  }
+}

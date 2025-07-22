@@ -1,0 +1,70 @@
+# SSL Certificate Files
+*.crt
+*.key
+*.pem
+*.crl
+*.srl
+
+# CA Files
+root-ca.*
+private-ca.*
+self-signed-ca-cert.*
+
+# Configuration Files
+config.json
+
+# Service Directories (containing certificates)
+*/
+# But not the src directory
+!src/
+
+# Certificate Revocation List
+revoked_serials.txt
+ca.crl
+ca-index.txt*
+ca-serial.txt
+crlnumber.txt*
+ca.conf
+
+# Encrypted Backups
+*.enc
+
+# Archive directory
+archive/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.txt
