@@ -23,6 +23,7 @@ import re
 import shutil
 from pathlib import Path
 from datetime import datetime
+import configparser
 import subprocess
 import os
 
@@ -103,72 +104,49 @@ class CertificateMigrator:
         return services_found
 
     def extract_domains_from_ext_file(self, ext_file_path):
-        """Extracts domains from OpenSSL extension file."""
-        domains = []
-        
+        domains = set()
+
         try:
             with open(ext_file_path, 'r') as f:
-                content = f.read()
-            
-            # Check for inline SAN format: subjectAltName = DNS:example.com, DNS:*.example.com
-            san_match = re.search(r'subjectAltName\s*=\s*([^@\n]+)', content, re.MULTILINE)
-            if san_match and not san_match.group(1).strip().startswith('@'):
-                san_entries = san_match.group(1).split(',')
-                for entry in san_entries:
-                    entry = entry.strip()
-                    if entry.startswith('DNS:'):
-                        domain = entry.replace('DNS:', '').strip()
-                        if domain and domain not in domains:
-                            domains.append(domain)
-                    elif entry.startswith('IP:'):
-                        ip = entry.replace('IP:', '').strip()
-                        if ip and ip not in domains:
-                            domains.append(ip)
-            
-            # Check for section-based format: subjectAltName = @alt_names
-            elif re.search(r'subjectAltName\s*=\s*@(\w+)', content):
-                section_match = re.search(r'subjectAltName\s*=\s*@(\w+)', content)
-                section_name = section_match.group(1)
-                
-                # Find the section (e.g., [alt_names])
-                section_pattern = rf'\[{section_name}\]'
-                section_start = re.search(section_pattern, content)
-                
-                if section_start:
-                    # Extract content from section start to next section or end
-                    section_content = content[section_start.end():]
-                    next_section = re.search(r'\[[\w_]+\]', section_content)
-                    if next_section:
-                        section_content = section_content[:next_section.start()]
-                    
-                    # Parse DNS.n = domain and IP.n = ip entries
-                    for line in section_content.split('\n'):
-                        line = line.strip()
-                        if not line or line.startswith('#'):
-                            continue
-                        
-                        # Match DNS.1 = iot.lan or IP.1 = 192.168.1.2
-                        entry_match = re.match(r'(DNS|IP)\.(\d+)\s*=\s*(.+)', line)
-                        if entry_match:
-                            entry_type = entry_match.group(1)
-                            value = entry_match.group(3).strip()
-                            
-                            if value and value not in domains:
-                                domains.append(value)
-            
-            # Also look for CN in subject if no SAN found
+                raw_content = f.read()
+
+            # Trick: prepend fake [global] section so configparser can parse the top
+            config_content = "[global]\n" + raw_content
+
+            config = configparser.ConfigParser(strict=False, delimiters=('='))
+            config.optionxform = str  # preserve case (important for 'DNS.x')
+            config.read_string(config_content)
+
+            # Try inline subjectAltName in [global] section
+            if 'subjectAltName' in config['global']:
+                san_value = config['global']['subjectAltName'].strip()
+
+                # Case 1: subjectAltName = DNS:...
+                if not san_value.startswith('@'):
+                    entries = [e.strip() for e in san_value.split(',')]
+                    for entry in entries:
+                        if entry.startswith('DNS:'):
+                            domains.add(entry.replace('DNS:', '').strip())
+
+                # Case 2: subjectAltName = @alt_names
+                else:
+                    section_name = san_value[1:].strip()
+                    if section_name in config:
+                        for key, value in config[section_name].items():
+                            if key.startswith('DNS.'):
+                                domains.add(value.split('#')[0].strip())
+
+            # Fallback: check for CN in raw text
             if not domains:
-                # Try to extract CN from subject
-                subject_match = re.search(r'CN\s*=\s*([^,\n]+)', content)
+                subject_match = re.search(r'CN\s*=\s*([^,\n]+)', raw_content)
                 if subject_match:
-                    cn = subject_match.group(1).strip()
-                    if cn:
-                        domains.append(cn)
-            
+                    domains.add(subject_match.group(1).strip())
+
         except Exception as e:
             print(f"   ⚠️  Could not read {ext_file_path}: {e}")
-        
-        return domains
+
+        return sorted(domains)
+
 
     def extract_cert_info(self, cert_path):
         """Extracts information from certificate file."""
@@ -182,7 +160,7 @@ class CertificateMigrator:
             
             # Parse subject components
             subject_parts = {}
-            for part in subject.replace('subject=', '').split('/'):
+            for part in subject.replace('subject=', '').split('/' if '/' in subject else ','):
                 if '=' in part:
                     key, value = part.split('=', 1)
                     subject_parts[key.strip()] = value.strip()
@@ -207,10 +185,12 @@ class CertificateMigrator:
 
     def create_service_config(self, service_name, domains, cert_info):
         """Creates a service configuration based on extracted information."""
+        print(f"   📄 Creating config for service '{service_name}'")
         # Base config from global config
+        global_config = self.global_config or {}
         config = {
-            "ca": self.global_config.get("ca", {}).copy(),
-            "defaults": self.global_config.get("defaults", {}).copy(),
+            "ca": global_config.get("ca", {}).copy(),
+            "defaults": global_config.get("defaults", {}).copy(),
             "domains": domains,
             "migrated": {
                 "date": datetime.now().isoformat(),
