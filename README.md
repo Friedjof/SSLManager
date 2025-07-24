@@ -84,7 +84,7 @@ Or let the interactive setup wizard guide you through configuration. The wizard 
 When you run the tool for the first time, it will automatically start the setup wizard:
 
 ```bash
-python ssl.py
+python sslmanager.py
 ```
 
 The setup wizard will guide you through:
@@ -102,7 +102,7 @@ The wizard will:
 ### Interactive Mode
 After setup, running without arguments starts interactive certificate creation:
 ```bash
-python ssl.py
+python sslmanager.py
 ```
 
 ### Command Line Options
@@ -110,48 +110,48 @@ python ssl.py
 #### Certificate Management
 ```bash
 # Create new certificate for a service
-python ssl.py --new proxy
+python sslmanager.py --new proxy
 
 # List all certificates with expiration dates
-python ssl.py --list
-python ssl.py -l
+python sslmanager.py --list
+python sslmanager.py -l
 
 # Show detailed service information
-python ssl.py --info proxy
+python sslmanager.py --info proxy
 
 # Renew a certificate
-python ssl.py --renew proxy
+python sslmanager.py --renew proxy
 
 # Delete a service and all certificates
-python ssl.py --delete proxy
+python sslmanager.py --delete proxy
 ```
 
 #### Certificate Revocation
 ```bash
 # Revoke a certificate
-python ssl.py --revoke proxy
+python sslmanager.py --revoke proxy
 
 # Show Certificate Revocation List
-python ssl.py --crl
+python sslmanager.py --crl
 ```
 
 #### CA Management
 ```bash
 # Show CA information (including expiration status)
-python ssl.py --ca-info
+python sslmanager.py --ca-info
 
 # Renew CA certificate (archives old one)
-python ssl.py --ca-renew
+python sslmanager.py --ca-renew
 
 # Show help
-python ssl.py --help
+python sslmanager.py --help
 ```
 
 ## Directory Structure
 
 ```
 ssl-certificate-manager/
-├── ssl.py                  # Main entry point
+├── sslmanager.py                  # Main entry point
 ├── src/                    # Source code modules
 │   ├── __init__.py
 │   ├── config_manager.py   # Configuration management
@@ -289,30 +289,30 @@ chmod 600 /path/to/ssl-certificate-manager/config.json
 
 ### Create a certificate for a web service
 ```bash
-python ssl.py --new webserver
+python sslmanager.py --new webserver
 # Follow prompts to select domains like webserver.lan, *.webserver.lan
 ```
 
 ### Check all certificate statuses
 ```bash
-python ssl.py -l
+python sslmanager.py -l
 ```
 
 ### Renew an expiring certificate
 ```bash
-python ssl.py --renew webserver
+python sslmanager.py --renew webserver
 ```
 
 ### Check CA certificate status and renew if needed
 ```bash
-python ssl.py --ca-info   # Check CA expiration
-python ssl.py --ca-renew  # Renew CA (archives old one)
+python sslmanager.py --ca-info   # Check CA expiration
+python sslmanager.py --ca-renew  # Renew CA (archives old one)
 ```
 
 ### Revoke a compromised certificate
 ```bash
-python ssl.py --revoke webserver
-python ssl.py --crl  # View revoked certificates
+python sslmanager.py --revoke webserver
+python sslmanager.py --crl  # View revoked certificates
 ```
 
 ## Certificate Installation
@@ -400,16 +400,16 @@ docker run -v /path/to/certs:/certs myapp
 ### Creating Encrypted Backups
 ```bash
 # Create encrypted backup
-python ssl.py --backup /path/to/backup.enc
+python sslmanager.py --backup /path/to/backup.enc
 
 # Backup specific service only
-python ssl.py --backup /path/to/backup.enc --service proxy
+python sslmanager.py --backup /path/to/backup.enc --service proxy
 ```
 
 ### Restoring from Backups
 ```bash
 # Restore from encrypted backup
-python ssl.py --restore /path/to/backup.enc
+python sslmanager.py --restore /path/to/backup.enc
 
 # Handle conflicts during restore
 # Options: skip, replace, or abort

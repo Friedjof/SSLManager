@@ -162,7 +162,7 @@ class CertificateAuthority:
             
             # Show renewal option if expired or expires soon
             if is_expired or expires_soon:
-                print(f"\n💡 Tip: Use 'python ssl.py --ca-renew' to renew the CA certificate")
+                print(f"\n💡 Tip: Use 'python sslmanager.py --ca-renew' to renew the CA certificate")
             
         except subprocess.CalledProcessError as e:
             print(f"❌ Error reading CA information: {e}")

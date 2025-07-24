@@ -51,7 +51,7 @@ class CertificateMigrator:
                 return True
         except FileNotFoundError:
             print(f"❌ Global config file '{self.config_file}' not found!")
-            print("💡 Run 'python ssl.py' first to create the global configuration.")
+            print("💡 Run 'python sslmanager.py' first to create the global configuration.")
             return False
         except json.JSONDecodeError:
             print(f"❌ Error reading configuration file {self.config_file}!")
@@ -395,10 +395,10 @@ class CertificateMigrator:
                     print(f"   ❌ {report['service']}: {report.get('error', 'Unknown error')}")
         
         print(f"\n💡 Next steps:")
-        print("   1️⃣  Test the migrated services with 'python ssl.py --list'")
+        print("   1️⃣  Test the migrated services with 'python sslmanager.py --list'")
         print("   2️⃣  Verify domain configurations in service config.json files")
         print("   3️⃣  Old .ext and .csr files are preserved for reference")
-        print("   4️⃣  You can now use 'python ssl.py --renew <service>' to update certificates")
+        print("   4️⃣  You can now use 'python sslmanager.py --renew <service>' to update certificates")
         
         return success_count == len(services)
 

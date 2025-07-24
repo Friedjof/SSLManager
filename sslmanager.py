@@ -83,7 +83,7 @@ class SSLManager:
         print("""🔐 SSL Certificate Manager - Help
 
 USAGE:
-    python ssl.py [OPTIONS] [SERVICE_NAME]
+    python sslmanager.py [OPTIONS] [SERVICE_NAME]
 
 OPTIONS:
     -h, --help              Show this help
@@ -103,20 +103,20 @@ OPTIONS:
     --service SERVICE       Backup/restore specific service only
 
 EXAMPLES:
-    python ssl.py                    # Interactive mode
-    python ssl.py -l                 # List all certificates
-    python ssl.py --new proxy        # New certificate for 'proxy'
-    python ssl.py --info proxy       # Details for 'proxy' certificate
-    python ssl.py --renew proxy      # Renew 'proxy' certificate
-    python ssl.py --delete proxy     # Delete 'proxy' service
-    python ssl.py --revoke proxy     # Revoke 'proxy' certificate
-    python ssl.py --ca-info          # Show CA information
-    python ssl.py --ca-renew         # Renew CA certificate
-    python ssl.py --crl              # Show Certificate Revocation List
-    python ssl.py --crl-update       # Update/regenerate CRL file
-    python ssl.py --backup backup.enc         # Create encrypted backup
-    python ssl.py --restore backup.enc        # Restore from backup
-    python ssl.py --backup backup.enc --service proxy  # Backup single service
+    python sslmanager.py                    # Interactive mode
+    python sslmanager.py -l                 # List all certificates
+    python sslmanager.py --new proxy        # New certificate for 'proxy'
+    python sslmanager.py --info proxy       # Details for 'proxy' certificate
+    python sslmanager.py --renew proxy      # Renew 'proxy' certificate
+    python sslmanager.py --delete proxy     # Delete 'proxy' service
+    python sslmanager.py --revoke proxy     # Revoke 'proxy' certificate
+    python sslmanager.py --ca-info          # Show CA information
+    python sslmanager.py --ca-renew         # Renew CA certificate
+    python sslmanager.py --crl              # Show Certificate Revocation List
+    python sslmanager.py --crl-update       # Update/regenerate CRL file
+    python sslmanager.py --backup backup.enc         # Create encrypted backup
+    python sslmanager.py --restore backup.enc        # Restore from backup
+    python sslmanager.py --backup backup.enc --service proxy  # Backup single service
 """)
 
     def parse_args(self):
